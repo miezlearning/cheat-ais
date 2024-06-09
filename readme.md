@@ -25,7 +25,10 @@ Caranya cukup simpel jadi jangan stupid banget, tolong dipahami :
 > Nanti aja yah... mau diedit dulu.
 
 
-
+### Fitur
+- [x] Pilih nilai skala manual
+- [x] Pilihan acak (baik dan buruk) nilai skalanya
+- [ ] Auto semua dosen langsung terisi kuesionernya.
 
 
 
