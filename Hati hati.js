@@ -36,6 +36,14 @@ function isiKuesionerAcak(rentang) {
     console.log(`%cKuesioner telah diisi otomatis dengan nilai acak dalam rentang ${rentang.join('-')} menggunakan acak ${metode}.`, 'color: blue; font-weight: bold;');
 }
 
+function baik() {
+    isiKuesionerAcak([4, 5]);
+}
+
+function buruk() {
+    isiKuesionerAcak([1, 2, 3]);
+}
+
 function resetKuesioner() {
     const skalaPenilaian = document.querySelectorAll('.form-check-input');
     skalaPenilaian.forEach(button => {
@@ -44,6 +52,45 @@ function resetKuesioner() {
     console.log("%cKuesioner telah direset.", 'color: orange; font-weight: bold;');
 }
 
+function OtomatisBanget(kondisi) {
+    // const regex = /mahasiswa\/khs\/kuisioner\/([^\/]+)\//; // Regex untuk mencari tombol kuesioner
+
+    const buttons = document.querySelectorAll('a[href*="/mahasiswa/khs/kuisioner/"]');
+    let index = 0;
+    let isCanceled = false;
+
+    function isiKuesionerBerikutnya() {
+        if (index < buttons.length && !isCanceled) {
+            if (!kondisi || confirm("Apakah Anda yakin ingin melanjutkan pengisian otomatis untuk kuesioner berikutnya?")) {
+                buttons[index].click(); 
+                nextTahap(1); 
+            } else {
+                isCanceled = true;
+                console.log("%cPengisian otomatis dibatalkan oleh pengguna.", 'color: red; font-weight: bold;');
+            }
+        } else {
+            console.log("%cSemua kuesioner telah diisi.", 'color: green; font-weight: bold;');
+        }
+    }
+
+    function nextTahap(tahap) {
+        if (tahap <= 6) {
+            setTimeout(() => {
+                document.getElementById('nextbtn').click(); 
+                setTimeout(() => {
+                    baik(); 
+                    nextTahap(tahap + 1);
+                }, 500);
+            }, 1000); 
+        } else {
+            setTimeout(() => { 
+                console.log("%cTahap selesai. Menyegarkan halaman...", 'color: blue; font-weight: bold;');
+            }, 3000); 
+        }
+    }
+
+    isiKuesionerBerikutnya();
+}
 
 // Kondisi jika orang batal melakukan.
 if (pilihan === null) {
@@ -59,17 +106,17 @@ if (pilihan === null) {
             break;
 
         case '6': // Skala Acak dengan pilihan.
-            const pilihacakan = prompt("Pilih jenis pengisian acak:\n1. Acak Baik (nilai 1-3)\n2. Acak Buruk (nilai 4-5)");
+            const pilihacakan = prompt("Pilih jenis pengisian acak:\n1. Acak Buruk (nilai 1-3)\n2. Acak Baik (nilai 4-5)");
             // Kondisi jika orang batal melakukan.
             if (pilihacakan === null) {
                 console.log("%cProses dibatalkan oleh pengguna.", 'color: red; font-weight: bold;');
             } else {
                 switch (pilihacakan) {
                     case '1':
-                        isiKuesionerAcak([1, 2, 3]);
+                        buruk();
                         break;
                     case '2':
-                        isiKuesionerAcak([4, 5]);
+                        baik();
                         break;
                     default:
                         console.log("%cDilihat baik-baik menunya.", 'color: red; font-weight: bold;');
@@ -79,8 +126,26 @@ if (pilihan === null) {
         case '7': // Reset skalanya.
             resetKuesioner();
             break;
+        case '8': // Isi otomatis kuesioner.
+            const metodeOtomatis = prompt("Pilih metode pengisian otomatis:\n1. Dengan konfirmasi di setiap langkah\n2. Otomatis hingga selesai");
+            if (metodeOtomatis === null) {
+                console.log("%cProses dibatalkan oleh pengguna.", 'color: red; font-weight: bold;');
+            } else {
+                switch (metodeOtomatis) {
+                    case '1':
+                        OtomatisBanget(true);
+                        break;
+                    case '2':
+                        OtomatisBanget(false);
+                        break;
+                    default:
+                        console.log("%cDilihat baik-baik menunya.", 'color: red; font-weight: bold;');
+                }
+            }
+            break;
         default:
             console.log("%cDilihat baik-baik menunya.", 'color: red; font-weight: bold;');
     }
 
 }
+
