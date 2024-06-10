@@ -1,4 +1,4 @@
-const pilihan = prompt("Pilih metode pengisian kuesioner:\n1. Isi dengan nilai 1\n2. Isi dengan nilai 2\n3. Isi dengan nilai 3\n4. Isi dengan nilai 4\n5. Isi dengan nilai 5\n6. Isi dengan nilai acak\n7. Reset kuisioner.");
+const pilihan = prompt("Pilih metode pengisian kuesioner:\n1. Isi dengan nilai 1\n2. Isi dengan nilai 2\n3. Isi dengan nilai 3\n4. Isi dengan nilai 4\n5. Isi dengan nilai 5\n6. Isi dengan nilai acak\n7. Reset kuisioner.\n8. Isi Otomatis (Pilh Metode)");
 
 // Kuisioner berdasarkan pilihan mahasiswa.
 function isiKuesioner(nilai) {
@@ -53,8 +53,6 @@ function resetKuesioner() {
 }
 
 function OtomatisBanget(kondisi) {
-    // const regex = /mahasiswa\/khs\/kuisioner\/([^\/]+)\//; // Regex untuk mencari tombol kuesioner
-
     const buttons = document.querySelectorAll('a[href*="/mahasiswa/khs/kuisioner/"]');
     let index = 0;
     let isCanceled = false;
@@ -62,8 +60,9 @@ function OtomatisBanget(kondisi) {
     function isiKuesionerBerikutnya() {
         if (index < buttons.length && !isCanceled) {
             if (!kondisi || confirm("Apakah Anda yakin ingin melanjutkan pengisian otomatis untuk kuesioner berikutnya?")) {
-                buttons[index].click(); 
-                nextTahap(1); 
+                buttons[index].click();
+                index++; 
+                nextTahap(1);
             } else {
                 isCanceled = true;
                 console.log("%cPengisian otomatis dibatalkan oleh pengguna.", 'color: red; font-weight: bold;');
@@ -76,16 +75,25 @@ function OtomatisBanget(kondisi) {
     function nextTahap(tahap) {
         if (tahap <= 6) {
             setTimeout(() => {
-                document.getElementById('nextbtn').click(); 
-                setTimeout(() => {
-                    baik(); 
-                    nextTahap(tahap + 1);
-                }, 500);
-            }, 1000); 
+                const nextButton = document.getElementById('nextbtn');
+                if (nextButton) {
+                    nextButton.click();
+                    setTimeout(() => {
+                        baik();
+                        nextTahap(tahap + 1);
+                    }, 500);
+                } else {
+                    console.error("Tombol 'nextbtn' tidak ditemukan.");
+                    isiKuesionerBerikutnya();
+                }
+            }, 1000);
         } else {
-            setTimeout(() => { 
-                console.log("%cTahap selesai. Menyegarkan halaman...", 'color: blue; font-weight: bold;');
-            }, 3000); 
+            setTimeout(() => {
+                console.log("%cTahap selesai. Kuesioner berikutnya...", 'color: blue; font-weight: bold;');
+                setTimeout(() => {
+                    isiKuesionerBerikutnya(); 
+                }, 3000);
+            }, 3000);
         }
     }
 
