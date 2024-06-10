@@ -29,13 +29,24 @@ Untuk memakai fitur otomatis, kalian hanya perlu berdiam dihalaman KHS yang ada 
 
 ### Masih tidak paham? yaudah nih videonya deh. 😤
 
+1. **Fitur Isi Manual**
+   
+   Pada fitur isi manual, menu yang dapat digunakan adalah, memilih ingin berapa nilai skalanya, atau acak (baik dan buruk).
+<video src="media\Tutorial Fitur Isi Manual Kuisioner.mp4" width="560" height="340" controls></video>
+
+
+1. **FItur Isi Otomatis**
+
+Pada fitur isi otomatis, kalian hanya perlu masukkan menu no **8** untuk pembukanya akan otomatis, tetapi selanjutnya kamu harus manual klik tombol kuisioner. **Tapi tenang!** pengisian juga otomatis jadi **effortless** banget mencetnya (sambil turuan juga bisa).
+
 > Nanti aja yah... mau diedit dulu.
 
 
 ### Fitur
 - [x] Pilih nilai skala manual
 - [x] Pilihan acak (baik dan buruk) nilai skalanya 
-- [x] Auto semua dosen langsung terisi kuesionernya. ⚠ [MASIH DALAM PERBAIKAN]
+- [x] Auto semua dosen langsung terisi kuesionernya. ⚠ [MASIH DALAM UJI COBA]
+- [ ] Support di hp.
 
 
 
