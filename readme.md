@@ -2,6 +2,10 @@
 
 Jadi, pada script kali ini untuk memudahkan mahasiswa dalam mengisi kuisioner. Tentu ini bermanfaat apalagi generasi milenial sekarang itu orangnya mageran. Dilihat dari hasil survey yang ada, maka dari itu saya membuat script ini 😂 (termasuk saya sendiri).
 
+# Takut? Ga Aman? :scream:
+
+**AMAN KOK** Tenang script ini hanya mengandalkan interface tidak akan berpengaruh ke back-end atau bagian server, ataupun bagian lebih dalam website sehingga mempengaruhi server unmul.
+
 
 # Cara Memakai Script 🤖
 
@@ -14,7 +18,7 @@ Caranya cukup simpel jadi jangan stupid banget, tolong dipahami :
 3. Pilih **Tahun Ajar/Semester** kalian yang ingin diisi kuisionernya.
 4. Klik tombol **ISI KUISIOENER** <span style="color:orange"> (Berwarna Orange/Jingga) </span> pada dosennya 
 5. Buka **Console** pada browser kalian masing-masing.
-   > **TIPS** : Gunakan **F12** atau buka artikel [berikut](https://sko.dev/referensi/javascript/menulis-js-pada-console-browser)
+   > **TIPS** : Gunakan **F12** atau buka artikel [berikut](https://sko.dev/referensi/javascript/menulis-js-pada-console-browser) apalagi produk apple mac.
 6. Jalankan script dengan menekan tombol **ENTER**.
 7. Tinggal pilih menu ketika ada *pop-up* yang muncul.
 
@@ -41,6 +45,7 @@ https://github.com/miezlearning/cheat-ais/assets/129609799/9ed9360b-19c7-44a4-bb
 Pada fitur isi otomatis, kalian hanya perlu masukkan menu no **8** untuk pembukanya akan otomatis, tetapi selanjutnya kamu harus manual klik tombol kuisioner. **Tapi tenang!** pengisian juga otomatis jadi **effortless** banget mencetnya (sambil turuan juga bisa).
 
 > Nanti aja yah... mau diedit dulu.
+
 
 
 ### Fitur
