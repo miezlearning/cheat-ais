@@ -1,4 +1,4 @@
-const pilihan = prompt("Pilih metode pengisian kuesioner:\n1. Isi dengan nilai 1\n2. Isi dengan nilai 2\n3. Isi dengan nilai 3\n4. Isi dengan nilai 4\n5. Isi dengan nilai 5\n6. Isi dengan nilai acak\n7. Reset kuisioner.\n8. Isi Otomatis (Pilh Metode)");
+const pilihan = prompt("Pilih metode pengisian kuesioner:\n1. Isi dengan nilai 1\n2. Isi dengan nilai 2\n3. Isi dengan nilai 3\n4. Isi dengan nilai 4\n5. Isi dengan nilai 5\n6. Isi dengan nilai acak\n7. Reset kuisioner.\n8. Isi Otomatis");
 
 // Kuisioner berdasarkan pilihan mahasiswa.
 function isiKuesioner(nilai) {
@@ -52,48 +52,68 @@ function resetKuesioner() {
     console.log("%cKuesioner telah direset.", 'color: orange; font-weight: bold;');
 }
 
-function OtomatisBanget(kondisi) {
+function OtomatisBanget() {
     const buttons = document.querySelectorAll('a[href*="/mahasiswa/khs/kuisioner/"]');
+
+    if (buttons.length === 0) {
+        console.error("%cTidak ada tombol 'Isi Kuisioner' yang ditemukan.", 'color: red; font-weight: bold;');
+        return;
+    }
+
     let index = 0;
-    let isCanceled = false;
 
     function isiKuesionerBerikutnya() {
-        if (index < buttons.length && !isCanceled) {
-            if (!kondisi || confirm("Apakah Anda yakin ingin melanjutkan pengisian otomatis untuk kuesioner berikutnya?")) {
-                buttons[index].click();
-                index++; 
-                nextTahap(1);
-            } else {
-                isCanceled = true;
-                console.log("%cPengisian otomatis dibatalkan oleh pengguna.", 'color: red; font-weight: bold;');
-            }
+        if (index < buttons.length) {
+            const currentButton = buttons[index];
+            currentButton.click();
+            console.log(`%cMengisi kuesioner ke-${index + 1} dengan tautan ${currentButton.href}.`, 'color: blue; font-weight: bold;');
+            setTimeout(() => {
+                isiKuesionerPadaPopUp();
+            }, 2000);
         } else {
             console.log("%cSemua kuesioner telah diisi.", 'color: green; font-weight: bold;');
         }
     }
 
-    function nextTahap(tahap) {
-        if (tahap <= 6) {
-            setTimeout(() => {
-                const nextButton = document.getElementById('nextbtn');
-                if (nextButton) {
-                    nextButton.click();
-                    setTimeout(() => {
-                        baik();
-                        nextTahap(tahap + 1);
-                    }, 500);
-                } else {
-                    console.error("Tombol 'nextbtn' tidak ditemukan.");
-                    isiKuesionerBerikutnya();
-                }
-            }, 1000);
-        } else {
-            setTimeout(() => {
-                console.log("%cTahap selesai. Kuesioner berikutnya...", 'color: blue; font-weight: bold;');
+    function isiKuesionerPadaPopUp() {
+        try {
+            handleSteps();
+        } catch (error) {
+            console.error("Error saat mengisi kuesioner pada pop-up:", error);
+        }
+    }
+
+    function handleSteps() {
+        const nextButton = document.getElementById('nextbtn');
+        const submitButton = document.querySelector('button[type="submit"]');
+        const currentStep = document.querySelector('.stepper-horizontal .step.active');
+
+        if (currentStep && currentStep.classList.contains('stepper-six')) {
+            if (submitButton) {
+                baik(); // Bagian ini ganti ke "buruk()" jika ingin mengganti skalanya
+                submitButton.click();
+                console.log("%cTombol 'Submit' telah diklik.", 'color: green; font-weight: bold;');
                 setTimeout(() => {
-                    isiKuesionerBerikutnya(); 
-                }, 3000);
-            }, 3000);
+                    window.location.href = "/mahasiswa/khs/kuisioner";
+                    window.onload = function () {
+                        index++;
+                        isiKuesionerBerikutnya();
+                    };
+                }, 1000); 
+            } else {
+                console.error("Tombol 'Submit' tidak ditemukan.");
+            }
+        } else {
+            baik(); // Bagian ini ganti ke "buruk()" jika ingin mengganti skalanya
+            if (nextButton) {
+                nextButton.click();
+                console.log("%cTombol 'Next' telah diklik.", 'color: green; font-weight: bold;');
+                setTimeout(() => {
+                    handleSteps();
+                }, 500); 
+            } else {
+                console.error("Tombol 'Next' tidak ditemukan.");
+            }
         }
     }
 
@@ -135,25 +155,9 @@ if (pilihan === null) {
             resetKuesioner();
             break;
         case '8': // Isi otomatis kuesioner.
-            const metodeOtomatis = prompt("Pilih metode pengisian otomatis:\n1. Dengan konfirmasi di setiap langkah\n2. Otomatis hingga selesai");
-            if (metodeOtomatis === null) {
-                console.log("%cProses dibatalkan oleh pengguna.", 'color: red; font-weight: bold;');
-            } else {
-                switch (metodeOtomatis) {
-                    case '1':
-                        OtomatisBanget(true);
-                        break;
-                    case '2':
-                        OtomatisBanget(false);
-                        break;
-                    default:
-                        console.log("%cDilihat baik-baik menunya.", 'color: red; font-weight: bold;');
-                }
-            }
+            OtomatisBanget();
             break;
         default:
             console.log("%cDilihat baik-baik menunya.", 'color: red; font-weight: bold;');
     }
-
 }
-
