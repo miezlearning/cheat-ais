@@ -22,10 +22,7 @@ Caranya cukup simpel jadi jangan stupid banget, tolong dipahami :
 
 # Cara memakai fitur otomatisnya 
 
-Untuk memakai fitur otomatis, kalian hanya perlu berdiam dihalaman KHS yang ada tombol **ISI KUISIONER**-nya. Setelah itu jalankan script seperti cara sebelumnya, dan pilih salah satu metode:
-
-1. Metode ini setiap selesai kuisioner, akan ditanya ingin lanjut atau tidak pengisiannya 
-2. Metode ini akan benar benar otomatis, dan membuat kalian ingin sambil turu melihat script tersebut mengisi secara otomatis kuisioner kalian.
+Untuk memakai fitur otomatis, kalian hanya perlu berdiam/idle dihalaman KHS yang ada tombol **ISI KUISIONER**-nya. Setelah itu jalankan script seperti cara sebelumnya
 
 ### Masih tidak paham? yaudah nih videonya deh. 😤
 
