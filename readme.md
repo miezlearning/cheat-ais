@@ -33,7 +33,10 @@ Untuk memakai fitur otomatis, kalian hanya perlu berdiam dihalaman KHS yang ada 
    
    Pada fitur isi manual, menu yang dapat digunakan adalah, memilih ingin berapa nilai skalanya, atau acak (baik dan buruk).
    
-[Video Tutorial Isi Manual](https://github.com/miezlearning/cheat-ais/blob/master/media/Tutorial%20Fitur%20Isi%20Manual%20Kuisioner.mp4)
+
+https://github.com/miezlearning/cheat-ais/assets/129609799/9ed9360b-19c7-44a4-bba4-7c5d9acf5c89
+
+
 
 
 1. **FItur Isi Otomatis**
