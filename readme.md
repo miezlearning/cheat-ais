@@ -34,9 +34,8 @@ Untuk memakai fitur otomatis, kalian hanya perlu berdiam dihalaman KHS yang ada 
 
 ### Fitur
 - [x] Pilih nilai skala manual
-- [x] Pilihan acak (baik dan buruk) nilai skalanya
-- [x] Auto semua dosen langsung terisi kuesionernya.
-
+- [x] Pilihan acak (baik dan buruk) nilai skalanya 
+- [x] Auto semua dosen langsung terisi kuesionernya. ⚠ [MASIH DALAM PERBAIKAN]
 
 
 
