@@ -38,18 +38,19 @@ Untuk memakai fitur otomatis, kalian hanya perlu berdiam/idle dihalaman KHS yang
 
 https://github.com/miezlearning/cheat-ais/assets/129609799/f12332b9-473f-4abe-8cae-f87b2edb8885
 
-
-
-
-
+**Thanks to** : Khairrudin for editing video.
 
 
 2. **FItur Isi Otomatis**
 
 Pada fitur isi otomatis, kalian hanya perlu masukkan menu no **8** untuk pembukanya akan otomatis, tetapi selanjutnya kamu harus manual klik tombol kuisioner. **Tapi tenang!** pengisian juga otomatis jadi **effortless** banget mencetnya (sambil turuan juga bisa).
 
-> Nanti aja yah... mau diedit dulu.
 
+
+https://github.com/miezlearning/cheat-ais/assets/129609799/3cc2e2be-0aeb-4912-815a-1e6fa29011f5
+
+
+**Thanks to** : Rangga Kristiawan for editing video.
 
 
 ### Fitur
