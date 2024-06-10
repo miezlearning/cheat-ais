@@ -35,7 +35,11 @@ Untuk memakai fitur otomatis, kalian hanya perlu berdiam/idle dihalaman KHS yang
    Pada fitur isi manual, menu yang dapat digunakan adalah, memilih ingin berapa nilai skalanya, atau acak (baik dan buruk).
    
 
-https://github.com/miezlearning/cheat-ais/assets/129609799/9ed9360b-19c7-44a4-bba4-7c5d9acf5c89
+
+https://github.com/miezlearning/cheat-ais/assets/129609799/f12332b9-473f-4abe-8cae-f87b2edb8885
+
+
+
 
 
 
