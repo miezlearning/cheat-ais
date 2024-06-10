@@ -39,7 +39,7 @@ https://github.com/miezlearning/cheat-ais/assets/129609799/9ed9360b-19c7-44a4-bb
 
 
 
-1. **FItur Isi Otomatis**
+2. **FItur Isi Otomatis**
 
 Pada fitur isi otomatis, kalian hanya perlu masukkan menu no **8** untuk pembukanya akan otomatis, tetapi selanjutnya kamu harus manual klik tombol kuisioner. **Tapi tenang!** pengisian juga otomatis jadi **effortless** banget mencetnya (sambil turuan juga bisa).
 
