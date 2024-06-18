@@ -19,8 +19,9 @@ Caranya cukup simpel jadi jangan stupid banget, tolong dipahami :
 4. Klik tombol **ISI KUISIOENER** <span style="color:orange"> (Berwarna Orange/Jingga) </span> pada dosennya 
 5. Buka **Console** pada browser kalian masing-masing.
    > **TIPS** : Gunakan **F12** atau buka artikel [berikut](https://sko.dev/referensi/javascript/menulis-js-pada-console-browser) apalagi produk apple mac.
-6. Jalankan script dengan menekan tombol **ENTER**.
-7. Tinggal pilih menu ketika ada *pop-up* yang muncul.
+6. Masukkan Scriptnya, atau copy disini [versi panjang]() [versi pendek]()
+7. Jalankan script dengan menekan tombol **ENTER**.
+8. Tinggal pilih menu ketika ada *pop-up* yang muncul.
 
 
 
