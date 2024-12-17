@@ -1,4 +1,6 @@
-# Selamat Datang di Script Jahil 😅
+# Selamat Datang di Script Cheat AIS 😅
+
+**Kuesioner** merupakan salah satu hal penting dalam akademik, berguna sebagai evaluasi dosen kedepannya. Selain itu juga sebagai syarat untuk melihat nilai akhir kalian.
 
 Jadi, pada script kali ini untuk memudahkan mahasiswa dalam mengisi kuisioner. Tentu ini bermanfaat apalagi generasi milenial sekarang itu orangnya mageran. Dilihat dari hasil survey yang ada, maka dari itu saya membuat script ini 😂 (termasuk saya sendiri).
 
@@ -58,7 +60,7 @@ https://github.com/miezlearning/cheat-ais/assets/129609799/3cc2e2be-0aeb-4912-81
 - [x] Pilih nilai skala manual
 - [x] Pilihan acak (baik dan buruk) nilai skalanya 
 - [x] Auto semua dosen langsung terisi kuesionernya. ⚠ [MASIH DALAM UJI COBA]
-- [ ] Support di hp.
+- [x] Support di hp (jika ada console dev).
 
 
 
