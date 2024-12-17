@@ -64,7 +64,30 @@ https://github.com/miezlearning/cheat-ais/assets/129609799/3cc2e2be-0aeb-4912-81
 
 
 
-
+# Lisensi dan Peringatan
+```
+/*
+ * ================================
+ * PERINGATAN: Penggunaan Kode
+ * ================================
+ *
+ * Skrip ini dibuat untuk tujuan pribadi dan pendidikan. 
+ * Dilarang keras untuk menjual, menyewakan, atau mendistribusikan kode ini 
+ * untuk tujuan komersial tanpa izin tertulis dari penulis.
+ *
+ * Jika Anda ingin menggunakan kode ini untuk keperluan komersial, 
+ * harap hubungi penulis terlebih dahulu untuk mendapatkan izin.
+ *
+ * Terima kasih telah menghargai karya ini.
+ * 
+ * ================================
+ * Penulis: [Nama atau Perusahaan Anda]
+ * Kontak: [Informasi Kontak Anda]
+ * ================================
+ *
+ * Hak Cipta © 2024 Miez. Semua hak dilindungi.
+ */
+```
 
 
 
