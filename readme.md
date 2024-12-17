@@ -81,8 +81,8 @@ https://github.com/miezlearning/cheat-ais/assets/129609799/3cc2e2be-0aeb-4912-81
  * Terima kasih telah menghargai karya ini.
  * 
  * ================================
- * Penulis: [Nama atau Perusahaan Anda]
- * Kontak: [Informasi Kontak Anda]
+ * Penulis: Miez
+ * Kontak: Discord  miezlipp     
  * ================================
  *
  * Hak Cipta © 2024 Miez. Semua hak dilindungi.
