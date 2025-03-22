@@ -99,13 +99,13 @@ https://github.com/Veirt/sia-helpers
 
 Gunakan tombol berikut di halaman `/mahasiswa/khs` pada AIS Unmul:
 
-`Alt + 1`: Mengisi semua jawaban kuesioner dengan nilai 1.
-`Alt + 2`: Mengisi semua jawaban kuesioner dengan nilai 2.
-`Alt + 3`: Mengisi semua jawaban kuesioner dengan nilai 3.
-`Alt + 4`: Mengisi semua jawaban kuesioner dengan nilai 4.
-`Alt + 5`: Mengisi semua jawaban kuesioner dengan nilai 5.
-`Alt + Q`: Mengaktifkan/mematikan pengisian kuesioner otomatis. Saat aktif, kuesioner akan diisi dengan nilai acak antara 4-5 dan dikirim secara otomatis.
-`Alt + P`: Mengatur ulang semua jawaban kuesioner (menghapus semua centang).
+- `Alt + 1`: Mengisi semua jawaban kuesioner dengan nilai 1.<br>
+- `Alt + 2`: Mengisi semua jawaban kuesioner dengan nilai 2.<br>
+- `Alt + 3`: Mengisi semua jawaban kuesioner dengan nilai 3.<br>
+- `Alt + 4`: Mengisi semua jawaban kuesioner dengan nilai 4.<br>
+- `Alt + 5`: Mengisi semua jawaban kuesioner dengan nilai 5.<br>
+- `Alt + Q`: Mengaktifkan/mematikan pengisian kuesioner otomatis. Saat aktif, kuesioner akan diisi dengan nilai acak antara 4-5 dan dikirim secara otomatis.<br>
+- `Alt + P`: Mengatur ulang semua jawaban kuesioner (menghapus semua centang).
 
 ## Interactive Version |  Fitur Otomatis Lainnya
 
