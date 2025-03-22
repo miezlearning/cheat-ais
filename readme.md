@@ -92,6 +92,24 @@ https://github.com/user-attachments/assets/88c9fb94-7368-408d-bea8-852e68a4e8d6
 ```
 
 
+# Interactive Version
 
+Pada versi yang lebih interaktif kalian bisa menggunakan tombol pada keyboard seperti :
+https://github.com/Veirt/sia-helpers
+
+Gunakan tombol berikut di halaman `/mahasiswa/khs` pada AIS Unmul:
+
+`Alt + 1`: Mengisi semua jawaban kuesioner dengan nilai 1.
+`Alt + 2`: Mengisi semua jawaban kuesioner dengan nilai 2.
+`Alt + 3`: Mengisi semua jawaban kuesioner dengan nilai 3.
+`Alt + 4`: Mengisi semua jawaban kuesioner dengan nilai 4.
+`Alt + 5`: Mengisi semua jawaban kuesioner dengan nilai 5.
+`Alt + Q`: Mengaktifkan/mematikan pengisian kuesioner otomatis. Saat aktif, kuesioner akan diisi dengan nilai acak antara 4-5 dan dikirim secara otomatis.
+`Alt + P`: Mengatur ulang semua jawaban kuesioner (menghapus semua centang).
+
+## Interactive Version |  Fitur Otomatis Lainnya
+
+- Login: Masuk otomatis saat NIM dan PASSWORD sudah diatur.
+- CAPTCHA: Mengisi CAPTCHA secara otomatis di halaman login.
 
 ## ©Credit: [bang aldinh](https://github.com/aldinh777/cheat-sia/tree/master/source) (inspirasi dalam membuat script.)
