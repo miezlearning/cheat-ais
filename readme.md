@@ -25,6 +25,11 @@ Caranya cukup simpel jadi jangan stupid banget, tolong dipahami :
 7. Jalankan script dengan menekan tombol **ENTER**.
 8. Tinggal pilih menu ketika ada *pop-up* yang muncul.
 
+   
+# Allow Pasting! 📝
+Jika kalian menemukan seperti digambar, cukup ketik `allow pasting` pada console kalian.
+
+![Allow Pasting](assets/allowpasting.jpg)
 
 
 # Cara memakai fitur otomatisnya 
