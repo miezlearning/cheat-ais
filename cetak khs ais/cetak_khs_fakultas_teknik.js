@@ -47,8 +47,8 @@
             }
         }
 
-        const wakilDekanName = prompt("Masukkan Nama Wakil Dekan:", "Prof. Ir. Haviluddin, Ph.D., IPM., ASEAN Eng.");
-        const wakilDekanNip = prompt("Masukkan NIP Wakil Dekan:", "197305281999031001");
+        const wakilDekanName = prompt("Masukkan Nama Wakil Dekan:", "Ir. Fahrizal Adnan, S. T., M. Sc.");
+        const wakilDekanNip = prompt("Masukkan NIP Wakil Dekan:", "198807262019031010");
 
         if (!studentName || !studentNim || !studentProdi || !wakilDekanName || !wakilDekanNip) {
             newWindow.close();
@@ -244,7 +244,7 @@
                                             <tr>
                                                 <td></td>
                                                 <td></td>
-                                                <td>Wakil Dekan Bidang Akademik</td>
+                                                <td>Wakil Dekan Bidang Kemahasiswaan, Alumni, dan Kerja Sama</td>
                                             </tr>
                                             <tr>
                                                 <td height='80'></td>
