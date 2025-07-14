@@ -38,6 +38,9 @@
         const studentName = prompt("Masukkan Nama Lengkap kamu:", "MUHAMMAD ALIF");
         const studentNim = prompt("Masukkan NIM kamu:", "2209106127");
         const studentProdi = prompt("Masukkan Program Studi kamu:", "S1 - INFORMATIKA");
+        const fakultas = prompt("Masukkan Nama Fakultas:", "Teknik"); // Input untuk Fakultas
+        // Email Fakultas tidak lagi diminta karena bagian header akan dihapus
+        // const emailFakultas = prompt("Masukkan Email Fakultas:", "dekan@ft.unmul.ac.id"); // Input untuk Email Fakultas
         
         let beasiswaText = '-';
         if (confirm("Apakah kamu menerima beasiswa?")) {
@@ -50,7 +53,8 @@
         const wakilDekanName = prompt("Masukkan Nama Wakil Dekan:", "Ir. Fahrizal Adnan, S. T., M. Sc.");
         const wakilDekanNip = prompt("Masukkan NIP Wakil Dekan:", "198807262019031010");
 
-        if (!studentName || !studentNim || !studentProdi || !wakilDekanName || !wakilDekanNip) {
+        // Validasi sekarang hanya mencakup studentName, studentNim, studentProdi, fakultas, wakilDekanName, wakilDekanNip
+        if (!studentName || !studentNim || !studentProdi || !fakultas || !wakilDekanName || !wakilDekanNip) {
             newWindow.close();
             alert("❌ Data yang kamu masukkan tidak lengkap. Operasi dibatalkan.");
             return;
@@ -59,7 +63,8 @@
         selectedSemester.element.click();
         console.log(`✅ Aksi klik pada semester "${selectedSemester.nama}" telah disimulasikan. Menunggu data muncul...`);
         
-        waitForDataAndPrint(newWindow, studentName, studentNim, studentProdi, beasiswaText, wakilDekanName, wakilDekanNip, selectedSemester);
+        // Panggil waitForDataAndPrint dengan parameter yang diperbarui (tanpa emailFakultas)
+        waitForDataAndPrint(newWindow, studentName, studentNim, studentProdi, fakultas, beasiswaText, wakilDekanName, wakilDekanNip, selectedSemester);
 
     } else {
         selectedSemester.element.click();
@@ -67,7 +72,8 @@
         console.log("👇 Detail KHS kamu akan muncul di bawah di halaman ini. Silakan gulir ke bawah.");
     }
 
-    function waitForDataAndPrint(printWindow, name, nim, prodi, beasiswa, dekan, nip, semester) {
+    // Di sini, parameter emailFakultas dihapus dari definisi fungsi
+    function waitForDataAndPrint(printWindow, name, nim, prodi, fakultas, beasiswa, dekan, nip, semester) {
         let attempts = 0;
         const maxAttempts = 50; 
         const interval = setInterval(() => {
@@ -77,7 +83,8 @@
             if (tableExists) {
                 clearInterval(interval);
                 console.log("✅ Data KHS terdeteksi di halaman. Sekarang sedang diproses untuk dicetak...");
-                generatePrintableVersion(printWindow, name, nim, prodi, beasiswa, dekan, nip, semester);
+                // Panggil generatePrintableVersion dengan parameter yang diperbarui
+                generatePrintableVersion(printWindow, name, nim, prodi, fakultas, beasiswa, dekan, nip, semester);
             } else {
                 attempts++;
                 if (attempts > maxAttempts) {
@@ -89,7 +96,8 @@
         }, 200); 
     }
     
-    function generatePrintableVersion(printWindow, studentName, studentNim, studentProdi, beasiswaText, wakilDekanName, wakilDekanNip, selectedSemester) {
+    // Di sini, parameter emailFakultas dihapus dari definisi fungsi
+    function generatePrintableVersion(printWindow, studentName, studentNim, studentProdi, fakultas, beasiswaText, wakilDekanName, wakilDekanNip, selectedSemester) {
         const detailContainer = document.querySelector('#response-detail');
         let courseRowsHTML = ''; 
         let totalSks = 0; 
@@ -182,11 +190,8 @@
                                                         <font class='l2 lb'>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN</font><br>
                                                         <font class='l2 lb'>RISET, DAN TEKNOLOGI</font><br>
                                                         <font class='l2 lb'>UNIVERSITAS MULAWARMAN</font><br>
-                                                        <font class='l1 lb'>FAKULTAS TEKNIK</font><br>
-                                                        Kampus Gunung Kelua, Jalan Sambaliung Nomor 9 Samarinda 75119<br>
-                                                        Telp. (0541) 736834, Fax (0541) 749315<br>
-                                                        Email : dekan@ft.unmul.ac.id, fteknik.unmul@ft.unmul.ac.id<br>
-                                                        Laman : http://ft.unmul.ac.id
+                                                        <font class='l1 lb'>FAKULTAS ${fakultas.toUpperCase()}</font><br>
+                                                        <!-- Bagian Alamat, Telp, Email, Laman telah dihapus -->
                                                     </div>
                                                 </td>
                                             </tr>

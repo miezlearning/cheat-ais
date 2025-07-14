@@ -15,53 +15,47 @@ Skrip ini dirancang untuk membantu mahasiswa **Fakultas Teknik Universitas Mulaw
 - Akses ke portal AIS Universitas Mulawarman ( [AIS Unmul](https://ais.unmul.ac.id) ).
 - Pop-up harus diizinkan di browser untuk membuka tab baru saat mencetak.
 
-## Cara Pakai
+
+## Cara Pakai (Update)
 Ikuti langkah-langkah berikut untuk menggunakan skrip ini:
 
-1. **Buka Halaman KHS di AIS**:
-   - Masuk ke akun mahasiswa Anda di [AIS Unmul](https://ais.unmul.ac.id/mahasiswa/khs).
+1. **Buka Halaman KHS di AIS**
+   - Login ke [AIS Unmul](https://ais.unmul.ac.id/mahasiswa/khs).
    - Pastikan Anda berada di halaman KHS.
 
-2. **Buka Console Developer**:
-   - **Chrome/Edge**: Tekan `F12` atau klik kanan pada halaman, lalu pilih **Inspect** > tab **Console**.
-   - **Firefox**: Tekan `F12` atau klik kanan pada halaman, lalu pilih **Inspect Element** > tab **Console**.
+2. **Buka Console Developer**
+   - Tekan `F12` atau klik kanan > **Inspect** > tab **Console**.
 
-3. **Salin dan Tempel Skrip**:
-   - Salin kode JavaScript dari file [`cetak_khs.js`](cetak_khs_fakultas_teknik.js) di repositori ini.
-   - Tempelkan kode ke dalam tab **Console** di browser.
+3. **Salin dan Tempel Skrip**
+   - Salin kode dari file [`cetak_khs_fakultas_teknik.js`](cetak_khs_fakultas_teknik.js).
+   - Tempelkan ke tab **Console** di browser.
 
-4. **Jalankan Skrip**:
+4. **Jalankan Skrip**
    - Tekan `Enter` setelah menempelkan kode.
-   - Skrip akan menampilkan daftar semester yang tersedia. Masukkan nomor semester yang diinginkan, lalu tekan `Enter`.
+   - Pilih semester yang ingin dicetak dengan memasukkan nomor semester.
 
-5. **Ikuti Instruksi**:
-   - Pilih apakah ingin membuat versi cetak KHS:
-     - Tekan **OK** untuk membuat versi cetak.
-     - Tekan **Batal** untuk hanya melihat detail KHS di halaman AIS.
-   - Jika memilih versi cetak, masukkan informasi berikut:
+5. **Pilih Mode Cetak**
+   - Tekan **OK** untuk membuat versi cetak KHS (tab baru akan terbuka).
+   - Tekan **Batal** untuk hanya melihat detail KHS di halaman AIS.
+
+6. **Isi Data**
+   - Jika memilih versi cetak, masukkan data berikut saat diminta:
      - Nama Lengkap
      - NIM
      - Program Studi
+     - Nama Fakultas
      - Nama Beasiswa (jika ada, atau kosongkan)
      - Nama Wakil Dekan
      - NIP Wakil Dekan
 
-6. **Konfigurasi Cetak**:
-   - Setelah memilih versi cetak, skrip akan membuka tab baru dengan KHS yang sudah diformat.
-   - Dialog cetak browser akan muncul secara otomatis. Pastikan settingan cetak sebagai berikut:
-     - **Pages**: All
-     - **Layout**: Portrait
-     - **Paper Size**: A5
-     - **Pages per Sheet**: 1
-     - **Margins**: Default
-     - **Scale**: Custom, set ke `88`
-     - **Headers and Footers**: Tidak dicentang ❌
-     - **Background Graphics**: Dicentang ✅
+7. **Konfigurasi Cetak**
+   - Tab baru akan terbuka dengan tampilan KHS siap cetak.
+   - Atur settingan cetak browser sesuai instruksi (A5, Portrait, Scale 88, dll).
    - Contoh settingan cetak:  
      ![Settingan Cetak](https://cdn.discordapp.com/attachments/1372924635129188394/1392380735595352064/80b9132b-9524-4007-8849-76e6d1274c1c.png?ex=686f531c&is=686e019c&hm=8092c29516919db9e447489003daa464e04d0b9faadee2471e0294a190154d14&)
 
-7. **Cetak atau Simpan**:
-   - Tekan **Save** untuk menyimpan sebagai PDF atau **Print** untuk mencetak langsung.
+8. **Cetak atau Simpan**
+   - Tekan **Save** untuk PDF atau **Print** untuk mencetak langsung.
 
 ## Contoh Hasil Cetak
 Berikut adalah tampilan KHS yang dihasilkan oleh skrip:  
