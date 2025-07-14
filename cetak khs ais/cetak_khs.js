@@ -83,7 +83,6 @@
             if (tableExists) {
                 clearInterval(interval);
                 console.log("✅ Data KHS terdeteksi di halaman. Sekarang sedang diproses untuk dicetak...");
-                // Panggil generatePrintableVersion dengan parameter yang diperbarui
                 generatePrintableVersion(printWindow, name, nim, prodi, fakultas, beasiswa, dekan, nip, semester);
             } else {
                 attempts++;
@@ -96,7 +95,6 @@
         }, 200); 
     }
     
-    // Di sini, parameter emailFakultas dihapus dari definisi fungsi
     function generatePrintableVersion(printWindow, studentName, studentNim, studentProdi, fakultas, beasiswaText, wakilDekanName, wakilDekanNip, selectedSemester) {
         const detailContainer = document.querySelector('#response-detail');
         let courseRowsHTML = ''; 
