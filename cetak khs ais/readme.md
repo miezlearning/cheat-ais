@@ -1,14 +1,14 @@
-# Skrip Cetak KHS Otomatis (Fakultas Teknik - AIS Unmul)
+# Skrip Cetak KHS Otomatis (AIS Unmul)
 
-Skrip ini dirancang untuk membantu mahasiswa **Fakultas Teknik Universitas Mulawarman** mencetak **Kartu Hasil Studi (KHS)** dari portal AIS secara otomatis. Skrip ini mengambil data KHS, memformatnya, dan menghasilkan dokumen siap cetak dalam format PDF atau langsung ke printer.
+Skrip ini dibuat untuk memudahkan mahasiswa dalam mencetak **Kartu Hasil Studi (KHS)** dari portal AIS Universitas Mulawarman secara otomatis. Dengan skrip ini, data KHS diambil langsung dari portal, diformat, dan dihasilkan dalam dokumen yang siap dicetak atau disimpan sebagai PDF.
 
 ## Fitur Utama
 - **Otomatisasi**: Mengambil data KHS langsung dari halaman AIS dan memformatnya secara otomatis.
 - **Versi Cetak**: Menghasilkan KHS dalam format rapi, siap cetak, atau disimpan sebagai PDF.
 
 ## Catatan Penting
-- **Khusus Fakultas Teknik**: Skrip ini hanya diuji untuk Fakultas Teknik di portal AIS Unmul. Format masih perlu disesuaikan dengan prodi fakultas lain.
-- **Pembaruan Berkelanjutan**: Skrip ini masih dalam pengembangan. Pantau pembaruan untuk fitur tambahan atau kompatibilitas yang lebih luas.
+- **Bisa Digunakan Semua Fakultas**: Skrip ini sekarang sudah dapat digunakan untuk seluruh fakultas di portal AIS Unmul. Format KHS akan menyesuaikan dengan data dari masing-masing fakultas.
+- **Pembaruan Berkelanjutan**: Skrip ini masih dalam pengembangan. Pantau pembaruan untuk fitur tambahan atau peningkatan kompatibilitas.
 
 ## Requirements
 - Browser (Google Chrome, Microsoft Edge, atau semacamnya).
