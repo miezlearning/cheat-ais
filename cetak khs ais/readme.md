@@ -2,6 +2,8 @@
 
 Skrip ini dibuat untuk memudahkan mahasiswa dalam mencetak **Kartu Hasil Studi (KHS)** dari portal AIS Universitas Mulawarman secara otomatis. Dengan skrip ini, data KHS diambil langsung dari portal, diformat, dan dihasilkan dalam dokumen yang siap dicetak atau disimpan sebagai PDF.
 
+# Video Tutorial (Coming Soon)
+
 ## Fitur Utama
 - **Otomatisasi**: Mengambil data KHS langsung dari halaman AIS dan memformatnya secara otomatis.
 - **Versi Cetak**: Menghasilkan KHS dalam format rapi, siap cetak, atau disimpan sebagai PDF.
