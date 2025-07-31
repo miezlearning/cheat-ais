@@ -54,7 +54,7 @@ Ikuti langkah-langkah berikut untuk menggunakan skrip ini:
    - Tab baru akan terbuka dengan tampilan KHS siap cetak.
    - Atur settingan cetak browser sesuai instruksi (A5, Portrait, Scale 88, dll).
    - Contoh settingan cetak:  
-     ![Settingan Cetak](https://cdn.discordapp.com/attachments/1372924635129188394/1392380735595352064/80b9132b-9524-4007-8849-76e6d1274c1c.png?ex=686f531c&is=686e019c&hm=8092c29516919db9e447489003daa464e04d0b9faadee2471e0294a190154d14&)
+     ![Settingan Cetak](../assets/print.jpg)
 
 8. **Cetak atau Simpan**
    - Tekan **Save** untuk PDF atau **Print** untuk mencetak langsung.
