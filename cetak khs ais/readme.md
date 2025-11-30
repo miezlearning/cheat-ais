@@ -29,7 +29,7 @@ Ikuti langkah-langkah berikut untuk menggunakan skrip ini:
    - Tekan `F12` atau klik kanan > **Inspect** > tab **Console**.
 
 3. **Salin dan Tempel Skrip**
-   - Salin kode dari file [`cetak_khs_fakultas_teknik.js`](cetak_khs_fakultas_teknik.js).
+   - Salin kode dari file [`cetak khs`](cetak_khs.js).
    - Tempelkan ke tab **Console** di browser.
 
 4. **Jalankan Skrip**
