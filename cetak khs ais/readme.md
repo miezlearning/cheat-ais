@@ -7,6 +7,7 @@ Skrip ini dibuat untuk memudahkan mahasiswa dalam mencetak **Kartu Hasil Studi (
 ## Fitur Utama
 - **Otomatisasi**: Mengambil data KHS langsung dari halaman AIS dan memformatnya secara otomatis.
 - **Versi Cetak**: Menghasilkan KHS dalam format rapi, siap cetak, atau disimpan sebagai PDF.
+- **Multi KHS**: Bisa mencetak 1 semester, rentang semester, semua semester, atau beberapa semester pilihan dalam 1 tab cetak.
 
 ## Catatan Penting
 - **Bisa Digunakan Semua Fakultas**: Skrip ini sekarang sudah dapat digunakan untuk seluruh fakultas di portal AIS Unmul. Format KHS akan menyesuaikan dengan data dari masing-masing fakultas.
@@ -34,11 +35,15 @@ Ikuti langkah-langkah berikut untuk menggunakan skrip ini:
 
 4. **Jalankan Skrip**
    - Tekan `Enter` setelah menempelkan kode.
-   - Pilih semester yang ingin dicetak dengan memasukkan nomor semester.
+   - Pilih mode KHS yang ingin diproses:
+     - `1` untuk 1 semester saja.
+     - `2` untuk rentang semester, contoh `2-5`.
+     - `3` untuk semua semester.
+     - `4` untuk beberapa semester pilihan, contoh `1,3,5` atau `1,3-5`.
 
 5. **Pilih Mode Cetak**
-   - Tekan **OK** untuk membuat versi cetak KHS (tab baru akan terbuka).
-   - Tekan **Batal** untuk hanya melihat detail KHS di halaman AIS.
+   - Untuk mode `1`, tekan **OK** jika ingin membuat versi cetak KHS, atau **Batal** jika hanya ingin melihat detail KHS di halaman AIS.
+   - Untuk mode `2`, `3`, dan `4`, skrip akan membuat semua KHS yang dipilih dalam 1 tab cetak.
 
 6. **Isi Data**
    - Jika memilih versi cetak, masukkan data berikut saat diminta:
