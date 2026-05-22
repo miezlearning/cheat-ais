@@ -2,7 +2,9 @@
   console.clear();
   console.log("🚀 Skrip Cetak KHS Otomatis...... DIMULAI!!");
 
-  const semesterElements = document.querySelectorAll("li.lihat");
+  const semesterElements = document.querySelectorAll(
+    "li.lihat, li.inbox-data.lihat",
+  );
   if (semesterElements.length === 0) {
     console.error(
       "❌ Gagal menemukan daftar semester. Pastikan kamu berada di halaman KHS AIS yang benar.",
@@ -10,14 +12,27 @@
     return;
   }
 
-  const semesters = Array.from(semesterElements).map((el, index) => ({
-    nomor: index + 1,
-    nama:
-      el.querySelector("div.email-data > span")?.innerText.trim() ||
-      el.innerText.trim() ||
-      `Semester ${index + 1}`,
-    element: el,
-  }));
+  const semesters = Array.from(semesterElements).map((el, index) => {
+    const cetakLink = el.querySelector(
+      'a[href*="/mahasiswa/khs/cetak/"], a[href*="mahasiswa/khs/cetak"]',
+    );
+    const cetakUrl = normalizeUrl(cetakLink?.getAttribute("href") || "");
+    const key = el.dataset.key || extractKeyFromCetakUrl(cetakUrl);
+    const detailUrl = buildDetailUrl(cetakUrl, key);
+
+    return {
+      nomor: index + 1,
+      nama:
+        el.querySelector("div.email-data > span")?.innerText.trim() ||
+        el.innerText.trim() ||
+        `Semester ${index + 1}`,
+      element: el,
+      key,
+      detailUrl,
+      cetakUrl,
+      stats: extractSemesterStats(el),
+    };
+  });
 
   const mode = prompt(
     "Pilih mode KHS yang ingin diproses:\n\n" +
@@ -74,13 +89,7 @@
         studentData,
       );
     } else {
-      selectedSemester.element.click();
-      console.log(
-        `✅ Aksi klik pada semester "${selectedSemester.nama}" telah disimulasikan.`,
-      );
-      console.log(
-        "👇 Detail KHS kamu akan muncul di bawah di halaman ini. Silakan gulir ke bawah.",
-      );
+      openSemesterInCurrentPage(selectedSemester);
     }
 
     return;
@@ -165,7 +174,8 @@
   function buildSemesterListText(title) {
     let menuText = `${title}\n\n`;
     semesters.forEach((semester) => {
-      menuText += `${semester.nomor}. ${semester.nama}\n`;
+      const infoIps = semester.stats.ips ? ` | IPS: ${semester.stats.ips}` : "";
+      menuText += `${semester.nomor}. ${semester.nama}${infoIps}\n`;
     });
     return menuText;
   }
@@ -302,6 +312,24 @@
     };
   }
 
+  function openSemesterInCurrentPage(semester) {
+    if (semester.cetakUrl) {
+      console.log(
+        `✅ Membuka link cetak KHS semester "${semester.nama}" di halaman ini.`,
+      );
+      window.location.href = semester.cetakUrl;
+      return;
+    }
+
+    semester.element.click();
+    console.log(
+      `✅ Aksi klik pada semester "${semester.nama}" telah disimulasikan.`,
+    );
+    console.log(
+      "👇 Detail KHS kamu akan muncul di bawah di halaman ini. Silakan gulir ke bawah.",
+    );
+  }
+
   async function processSemestersForPrint(
     selectedSemesters,
     printWindow,
@@ -328,7 +356,7 @@
         pages.push(generateErrorPage(semester, error.message));
       }
 
-      await sleep(300);
+      await sleep(350);
     }
 
     writePrintableDocument(printWindow, pages, studentData);
@@ -353,103 +381,136 @@
   }
 
   async function loadSemesterAndBuildPage(selectedSemester, studentData) {
-    const detailContainer = document.querySelector("#response-detail");
-    if (detailContainer) {
-      detailContainer.innerHTML = `<p>Memuat detail KHS ${escapeHTML(selectedSemester.nama)}...</p>`;
-    }
-
-    selectedSemester.element.click();
-    console.log(
-      `✅ Aksi klik pada semester "${selectedSemester.nama}" telah disimulasikan. Menunggu data muncul...`,
-    );
-
-    const loadedDetailContainer = await waitForData();
+    const semesterDocument = await fetchSemesterDocument(selectedSemester);
     return generateKhsPageHTML(
-      loadedDetailContainer,
+      semesterDocument.document,
       studentData,
       selectedSemester,
+      semesterDocument.source,
     );
   }
 
-  function waitForData(maxAttempts = 60, interval = 300) {
-    return new Promise((resolve, reject) => {
-      let attempts = 0;
-      const intervalId = setInterval(() => {
-        const detailContainer = document.querySelector("#response-detail");
-        const tableExists =
-          detailContainer && detailContainer.querySelector("table");
+  async function fetchSemesterDocument(semester) {
+    const attempts = [];
 
-        if (tableExists) {
-          clearInterval(intervalId);
-          console.log(
-            "✅ Data KHS terdeteksi di halaman. Sekarang sedang diproses untuk dicetak...",
-          );
-          resolve(detailContainer);
-        } else if (attempts >= maxAttempts) {
-          clearInterval(intervalId);
-          reject(new Error("Gagal mendeteksi detail KHS. Waktu tunggu habis."));
-        }
-
-        attempts++;
-      }, interval);
-    });
-  }
-
-  function generateKhsPageHTML(detailContainer, studentData, selectedSemester) {
-    let courseRowsHTML = "";
-    let totalSks = 0;
-    let totalHasil = 0;
-    const apiRows = detailContainer.querySelectorAll("tbody > tr");
-    let counter = 1;
-
-    apiRows.forEach((row) => {
-      if (!row.querySelector("input.list-id-kelas")) return;
-
-      const cells = row.querySelectorAll("th, td");
-      const mainLine = (cells[2]?.innerText || "").split("\n")[0].trim();
-      let kodeMk = "N/A";
-      let namaMk = mainLine;
-
-      if (mainLine.includes(" - ")) {
-        const parts = mainLine.split(" - ");
-        kodeMk = parts.shift() || "N/A";
-        namaMk = parts.join(" - ");
-      }
-
-      const wp = cells[3]?.innerText.trim() || "-";
-      const sks =
-        parseFloat((cells[4]?.innerText.trim() || "0").replace(",", ".")) || 0;
-      const nhNilai = cells[6]?.innerText.trim() || "-";
-      const bbtBobot = cells[7]?.innerText.trim() || "-";
-      const sksXBbtHasilText = (cells[8]?.innerText.trim() || "0").replace(
-        ",",
-        ".",
-      );
-      const sksXBbtHasil = parseFloat(sksXBbtHasilText) || 0;
-
-      totalSks += sks;
-      totalHasil += sksXBbtHasil;
-
-      courseRowsHTML += `<tr>
-                                <td align="center">${counter++}</td>
-                                <td>${escapeHTML(kodeMk.trim())}</td>
-                                <td>${escapeHTML(namaMk.trim())}</td>
-                                <td align="center">${escapeHTML(wp)}</td>
-                                <td align="center">${sks.toFixed(2)}</td>
-                                <td align="center">${escapeHTML(nhNilai)}</td>
-                                <td align="center">${escapeHTML(bbtBobot)}</td>
-                                <td align="right">${sksXBbtHasil.toFixed(2)}</td>
-                            </tr>`;
-    });
-
-    if (!courseRowsHTML) {
-      courseRowsHTML = `<tr><td colspan="8" align="center">Data mata kuliah tidak ditemukan.</td></tr>`;
+    if (semester.detailUrl) {
+      attempts.push({
+        label: "detail",
+        url: semester.detailUrl,
+        ajax: true,
+      });
     }
 
-    const ipText =
-      detailContainer.querySelector("#ip")?.innerText.trim() ||
-      document.querySelector("#ip")?.innerText.trim() ||
-      "0.00";
+    if (semester.cetakUrl) {
+      attempts.push({
+        label: "cetak",
+        url: semester.cetakUrl,
+        ajax: false,
+      });
+    }
+
+    if (attempts.length === 0) {
+      throw new Error(
+        "Semester ini tidak memiliki data-key atau link cetak, jadi tidak bisa diambil otomatis.",
+      );
+    }
+
+    const errors = [];
+
+    for (const attempt of attempts) {
+      try {
+        console.log(
+          `🔎 Mengambil data ${attempt.label} untuk "${semester.nama}" dari: ${attempt.url}`,
+        );
+        const html = await fetchHTML(attempt.url, attempt.ajax);
+        const document = parseHTML(html);
+        const courseData = extractCourseData(document);
+
+        if (courseData.courses.length > 0 || attempt.label === "cetak") {
+          if (courseData.courses.length === 0) {
+            console.warn(
+              `⚠️ Data ${attempt.label} untuk "${semester.nama}" berhasil diambil, tapi tabel mata kuliah belum terdeteksi. Akan dicoba sebagai halaman cetak mentah.`,
+            );
+          } else {
+            console.log(
+              `✅ Data ${attempt.label} untuk "${semester.nama}" berhasil diambil (${courseData.courses.length} mata kuliah).`,
+            );
+          }
+
+          return {
+            document,
+            source: attempt.label,
+            url: attempt.url,
+          };
+        }
+
+        errors.push(
+          `${attempt.label}: response berhasil, tapi tabel mata kuliah tidak ditemukan`,
+        );
+      } catch (error) {
+        console.warn(
+          `⚠️ Gagal mengambil data ${attempt.label} untuk "${semester.nama}": ${error.message}`,
+        );
+        errors.push(`${attempt.label}: ${error.message}`);
+      }
+    }
+
+    throw new Error(
+      `Tidak bisa mengambil data KHS otomatis. Detail error: ${errors.join(" | ")}`,
+    );
+  }
+
+  async function fetchHTML(url, isAjax) {
+    const headers = {
+      Accept: isAjax
+        ? "text/html, */*; q=0.01"
+        : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    };
+
+    if (isAjax) {
+      headers["X-Requested-With"] = "XMLHttpRequest";
+    }
+
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP ${response.status} ${response.statusText || ""}`.trim(),
+      );
+    }
+
+    return response.text();
+  }
+
+  function parseHTML(html) {
+    return new DOMParser().parseFromString(html, "text/html");
+  }
+
+  function generateKhsPageHTML(
+    detailContainer,
+    studentData,
+    selectedSemester,
+    source,
+  ) {
+    const courseData = extractCourseData(detailContainer);
+
+    if (courseData.courses.length === 0 && source === "cetak") {
+      const embeddedPage = generateEmbeddedCetakPage(
+        detailContainer,
+        selectedSemester,
+      );
+      if (embeddedPage) return embeddedPage;
+    }
+
+    const courseRowsHTML =
+      courseData.courseRowsHTML ||
+      `<tr><td colspan="8" align="center">Data mata kuliah tidak ditemukan.</td></tr>`;
+    const ipText = extractIpText(detailContainer, selectedSemester.stats.ips);
     const ipValue = parseFloat(ipText.replace(",", ".")) || 0;
     const maksimalSksTeks = getMaksimalSksText(ipValue);
 
@@ -498,9 +559,9 @@
                             ${courseRowsHTML}
                             <tr>
                                 <th colspan="4" align="center">TOTAL</th>
-                                <th>${totalSks.toFixed(2)}</th>
+                                <th>${courseData.totalSks.toFixed(2)}</th>
                                 <th colspan="2"></th>
-                                <th>${totalHasil.toFixed(2)}</th>
+                                <th>${courseData.totalHasil.toFixed(2)}</th>
                             </tr>
                             <tr>
                                 <th colspan="8" align="left"><font class="l3 lb">INDEKS PRESTASI (IP): ${escapeHTML(ipText)}</font></th>
@@ -541,6 +602,132 @@
                 </page>`;
   }
 
+  function extractCourseData(source) {
+    const courses = extractCourseRows(source);
+    let totalSks = 0;
+    let totalHasil = 0;
+
+    const courseRowsHTML = courses
+      .map((course, index) => {
+        const sks = toNumber(course.sks);
+        const hasil = toNumber(course.hasil);
+
+        totalSks += sks;
+        totalHasil += hasil;
+
+        return `<tr>
+                  <td align="center">${index + 1}</td>
+                  <td>${escapeHTML(course.kodeMk || "-")}</td>
+                  <td>${escapeHTML(course.namaMk || "-")}</td>
+                  <td align="center">${escapeHTML(course.wp || "-")}</td>
+                  <td align="center">${sks.toFixed(2)}</td>
+                  <td align="center">${escapeHTML(course.nilai || "-")}</td>
+                  <td align="center">${escapeHTML(course.bobot || "-")}</td>
+                  <td align="right">${hasil.toFixed(2)}</td>
+                </tr>`;
+      })
+      .join("\n");
+
+    return {
+      courses,
+      courseRowsHTML,
+      totalSks,
+      totalHasil,
+    };
+  }
+
+  function extractCourseRows(source) {
+    const apiRows = Array.from(source.querySelectorAll("tbody > tr")).filter(
+      (row) => row.querySelector("input.list-id-kelas"),
+    );
+
+    if (apiRows.length > 0) {
+      return apiRows.map((row) => {
+        const cells = getCells(row);
+        const mainLine = getCellText(cells[2]).split("\n")[0].trim();
+        let kodeMk = "N/A";
+        let namaMk = mainLine;
+
+        if (mainLine.includes(" - ")) {
+          const parts = mainLine.split(" - ");
+          kodeMk = parts.shift() || "N/A";
+          namaMk = parts.join(" - ");
+        }
+
+        return {
+          kodeMk: kodeMk.trim(),
+          namaMk: namaMk.trim(),
+          wp: getCellText(cells[3]) || "-",
+          sks: getCellText(cells[4]) || "0",
+          nilai: getCellText(cells[6]) || "-",
+          bobot: getCellText(cells[7]) || "-",
+          hasil: getCellText(cells[8]) || "0",
+        };
+      });
+    }
+
+    return Array.from(source.querySelectorAll("table tr"))
+      .map((row) => getCells(row))
+      .filter(
+        (cells) => cells.length >= 8 && /^\d+\.?$/.test(getCellText(cells[0])),
+      )
+      .map((cells) => ({
+        kodeMk: getCellText(cells[1]) || "N/A",
+        namaMk: getCellText(cells[2]) || "-",
+        wp: getCellText(cells[3]) || "-",
+        sks: getCellText(cells[4]) || "0",
+        nilai: getCellText(cells[5]) || "-",
+        bobot: getCellText(cells[6]) || "-",
+        hasil: getCellText(cells[7]) || "0",
+      }))
+      .filter((course) => {
+        const combined = `${course.kodeMk} ${course.namaMk}`.toLowerCase();
+        return (
+          !combined.includes("kode mk") && !combined.includes("mata kuliah")
+        );
+      });
+  }
+
+  function generateEmbeddedCetakPage(document, selectedSemester) {
+    const body = document.body?.cloneNode(true);
+    if (!body) return "";
+
+    body
+      .querySelectorAll(
+        "script, iframe, nav, header, footer, .sidebar-wrapper, .page-header, .tap-top, .bookmark-wrap, .loader-wrapper",
+      )
+      .forEach((element) => element.remove());
+
+    const existingPage = body.querySelector("page");
+    const content = existingPage
+      ? existingPage.outerHTML
+      : body.innerHTML.trim();
+    if (!content) return "";
+
+    return `<page class="khs-page embedded-khs">
+              <div class="source-info">Sumber: halaman cetak AIS untuk ${escapeHTML(selectedSemester.nama)}</div>
+              ${content}
+            </page>`;
+  }
+
+  function extractIpText(source, fallbackIp) {
+    const directIp = getCellText(source.querySelector("#ip"));
+    if (directIp) return directIp;
+
+    const allText = getCellText(source);
+    const patterns = [
+      /INDEKS\s+PRESTASI\s*\(IP\)\s*:?\s*([0-9]+(?:[,.][0-9]+)?)/i,
+      /\bIPS\s*:?\s*([0-9]+(?:[,.][0-9]+)?)/i,
+    ];
+
+    for (const pattern of patterns) {
+      const match = allText.match(pattern);
+      if (match) return match[1];
+    }
+
+    return fallbackIp || "0.00";
+  }
+
   function generateErrorPage(semester, errorMessage) {
     return `<page class="khs-page">
                     <h1>Gagal Memuat KHS</h1>
@@ -564,6 +751,7 @@
                                     .l2 { font-size: 1.2em; }
                                     .l3 { font-size: 1.1em; }
                                     .lb { font-weight: bold; }
+                                    .source-info { color: #555; font-family: Arial, sans-serif; font-size: 11px; margin-bottom: 8px; }
                                     .khs-page { display: block; page-break-after: always; break-after: page; }
                                     .khs-page:last-child { page-break-after: auto; break-after: auto; }
                                 </style>
@@ -576,6 +764,86 @@
     printWindow.document.open();
     printWindow.document.write(finalHTML);
     printWindow.document.close();
+  }
+
+  function buildDetailUrl(cetakUrl, key) {
+    if (cetakUrl && cetakUrl.includes("/mahasiswa/khs/cetak/")) {
+      return cetakUrl.replace(
+        "/mahasiswa/khs/cetak/",
+        "/mahasiswa/khs/detail/",
+      );
+    }
+
+    if (key) {
+      return `${window.location.origin}/mahasiswa/khs/detail/${key}`;
+    }
+
+    return "";
+  }
+
+  function normalizeUrl(href) {
+    if (!href) return "";
+
+    try {
+      return new URL(href, window.location.href).href;
+    } catch (error) {
+      console.warn(`⚠️ Gagal membaca URL: ${href}`, error);
+      return "";
+    }
+  }
+
+  function extractKeyFromCetakUrl(cetakUrl) {
+    if (!cetakUrl) return "";
+
+    const marker = "/mahasiswa/khs/cetak/";
+    const markerIndex = cetakUrl.indexOf(marker);
+    if (markerIndex === -1) return "";
+
+    return cetakUrl
+      .slice(markerIndex + marker.length)
+      .split("?")[0]
+      .split("#")[0];
+  }
+
+  function extractSemesterStats(element) {
+    const badges = Array.from(element.querySelectorAll(".badge")).map((badge) =>
+      badge.innerText.trim(),
+    );
+
+    return {
+      sks: extractBadgeValue(badges, "SKS"),
+      ips: extractBadgeValue(badges, "IPS"),
+      totalSks: extractBadgeValue(badges, "T. SKS"),
+      ipk: extractBadgeValue(badges, "IPK"),
+    };
+  }
+
+  function extractBadgeValue(badgeTexts, label) {
+    const normalizedLabel = label.toUpperCase();
+    const badgeText = badgeTexts.find((text) =>
+      text.toUpperCase().startsWith(normalizedLabel),
+    );
+    if (!badgeText) return "";
+
+    const match = badgeText.match(/:\s*([^\n]+)/);
+    return match ? match[1].trim() : "";
+  }
+
+  function getCells(row) {
+    return Array.from(row?.querySelectorAll("th, td") || []);
+  }
+
+  function getCellText(element) {
+    return (element?.innerText || element?.textContent || "").trim();
+  }
+
+  function toNumber(value) {
+    const normalized = String(value || "0")
+      .replace(/\s/g, "")
+      .replace(",", ".")
+      .replace(/[^0-9.-]/g, "");
+    const number = parseFloat(normalized);
+    return Number.isFinite(number) ? number : 0;
   }
 
   function getMaksimalSksText(ipValue) {
