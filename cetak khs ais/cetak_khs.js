@@ -391,67 +391,122 @@
   }
 
   async function fetchSemesterDocument(semester) {
-    const attempts = [];
+    const errors = [];
 
-    if (semester.detailUrl) {
-      attempts.push({
-        label: "detail",
-        url: semester.detailUrl,
-        ajax: true,
-      });
-    }
-
-    if (semester.cetakUrl) {
-      attempts.push({
-        label: "cetak",
-        url: semester.cetakUrl,
-        ajax: false,
-      });
-    }
-
-    if (attempts.length === 0) {
+    if (!semester.detailUrl && !semester.cetakUrl) {
       throw new Error(
         "Semester ini tidak memiliki data-key atau link cetak, jadi tidak bisa diambil otomatis.",
       );
     }
 
-    const errors = [];
-
-    for (const attempt of attempts) {
+    if (semester.detailUrl) {
       try {
-        console.log(
-          `🔎 Mengambil data ${attempt.label} untuk "${semester.nama}" dari: ${attempt.url}`,
-        );
-        const html = await fetchHTML(attempt.url, attempt.ajax);
-        const document = parseHTML(html);
+        const document = await fetchDocumentFromUrl({
+          label: "detail",
+          url: semester.detailUrl,
+          ajax: true,
+          retries: 2,
+        });
         const courseData = extractCourseData(document);
 
-        if (courseData.courses.length > 0 || attempt.label === "cetak") {
-          if (courseData.courses.length === 0) {
-            console.warn(
-              `⚠️ Data ${attempt.label} untuk "${semester.nama}" berhasil diambil, tapi tabel mata kuliah belum terdeteksi. Akan dicoba sebagai halaman cetak mentah.`,
-            );
-          } else {
-            console.log(
-              `✅ Data ${attempt.label} untuk "${semester.nama}" berhasil diambil (${courseData.courses.length} mata kuliah).`,
-            );
-          }
-
-          return {
-            document,
-            source: attempt.label,
-            url: attempt.url,
-          };
+        if (courseData.courses.length > 0) {
+          console.log(
+            `✅ Data detail untuk "${semester.nama}" berhasil diambil (${courseData.courses.length} mata kuliah).`,
+          );
+          return { document, source: "detail", url: semester.detailUrl };
         }
 
+        const preview = getDocumentPreview(document);
+        console.warn(
+          `⚠️ Data detail untuk "${semester.nama}" berhasil diambil, tapi tabel mata kuliah belum terdeteksi. Preview: ${preview}`,
+        );
         errors.push(
-          `${attempt.label}: response berhasil, tapi tabel mata kuliah tidak ditemukan`,
+          `detail: response berhasil, tapi tabel mata kuliah tidak ditemukan. Preview: ${preview}`,
         );
       } catch (error) {
         console.warn(
-          `⚠️ Gagal mengambil data ${attempt.label} untuk "${semester.nama}": ${error.message}`,
+          `⚠️ Gagal mengambil data detail untuk "${semester.nama}": ${error.message}`,
         );
-        errors.push(`${attempt.label}: ${error.message}`);
+        errors.push(`detail: ${error.message}`);
+      }
+    }
+
+    try {
+      console.log(
+        `🖱️ Mencoba mode klik bawaan AIS untuk "${semester.nama}"...`,
+      );
+      const document = await loadDocumentUsingSiteClick(semester);
+      const courseData = extractCourseData(document);
+
+      if (courseData.courses.length > 0) {
+        console.log(
+          `✅ Mode klik bawaan AIS untuk "${semester.nama}" berhasil (${courseData.courses.length} mata kuliah).`,
+        );
+        return { document, source: "site-click", url: semester.detailUrl };
+      }
+
+      const preview = getDocumentPreview(document);
+      errors.push(
+        `klik bawaan AIS: response-detail muncul, tapi tabel mata kuliah tidak ditemukan. Preview: ${preview}`,
+      );
+    } catch (error) {
+      console.warn(
+        `⚠️ Mode klik bawaan AIS untuk "${semester.nama}" gagal: ${error.message}`,
+      );
+      errors.push(`klik bawaan AIS: ${error.message}`);
+    }
+
+    if (semester.cetakUrl) {
+      try {
+        console.log(
+          `🧭 Mencoba membuka halaman cetak via iframe untuk "${semester.nama}" dari: ${semester.cetakUrl}`,
+        );
+        const document = await loadDocumentInIframe(semester.cetakUrl);
+        const courseData = extractCourseData(document);
+
+        if (courseData.courses.length > 0 || looksLikePrintableKhs(document)) {
+          console.log(
+            `✅ Halaman cetak via iframe untuk "${semester.nama}" berhasil dibaca.`,
+          );
+          return { document, source: "cetak-iframe", url: semester.cetakUrl };
+        }
+
+        const preview = getDocumentPreview(document);
+        errors.push(
+          `cetak iframe: halaman terbuka, tapi KHS tidak terdeteksi. Preview: ${preview}`,
+        );
+      } catch (error) {
+        console.warn(
+          `⚠️ Halaman cetak via iframe untuk "${semester.nama}" gagal: ${error.message}`,
+        );
+        errors.push(`cetak iframe: ${error.message}`);
+      }
+
+      try {
+        const document = await fetchDocumentFromUrl({
+          label: "cetak",
+          url: semester.cetakUrl,
+          ajax: false,
+          retries: 1,
+        });
+        const courseData = extractCourseData(document);
+
+        if (courseData.courses.length > 0 || looksLikePrintableKhs(document)) {
+          console.log(
+            `✅ Data cetak untuk "${semester.nama}" berhasil diambil.`,
+          );
+          return { document, source: "cetak", url: semester.cetakUrl };
+        }
+
+        const preview = getDocumentPreview(document);
+        errors.push(
+          `cetak: response berhasil, tapi KHS tidak terdeteksi. Preview: ${preview}`,
+        );
+      } catch (error) {
+        console.warn(
+          `⚠️ Gagal mengambil data cetak untuk "${semester.nama}": ${error.message}`,
+        );
+        errors.push(`cetak: ${error.message}`);
       }
     }
 
@@ -460,7 +515,13 @@
     );
   }
 
-  async function fetchHTML(url, isAjax) {
+  async function fetchDocumentFromUrl({ label, url, ajax, retries }) {
+    console.log(`🔎 Mengambil data ${label} dari: ${url}`);
+    const html = await fetchHTML(url, ajax, retries);
+    return parseResponseToDocument(html);
+  }
+
+  async function fetchHTML(url, isAjax, retries = 1) {
     const headers = {
       Accept: isAjax
         ? "text/html, */*; q=0.01"
@@ -471,24 +532,436 @@
       headers["X-Requested-With"] = "XMLHttpRequest";
     }
 
-    const response = await fetch(url, {
-      method: "GET",
-      credentials: "include",
-      cache: "no-store",
-      headers,
-    });
+    let lastError;
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+          headers,
+        });
 
-    if (!response.ok) {
-      throw new Error(
-        `HTTP ${response.status} ${response.statusText || ""}`.trim(),
-      );
+        if (!response.ok) {
+          throw new Error(
+            `HTTP ${response.status} ${response.statusText || ""}`.trim(),
+          );
+        }
+
+        return response.text();
+      } catch (error) {
+        lastError = error;
+        if (attempt < retries) {
+          console.warn(
+            `⚠️ Request gagal (${error.message}). Mencoba ulang ${attempt + 1}/${retries}...`,
+          );
+          await sleep(900 * attempt);
+        }
+      }
     }
 
-    return response.text();
+    throw lastError;
+  }
+
+  async function loadDocumentUsingSiteClick(semester) {
+    const container = await waitForResponseDetailContainer();
+    container.innerHTML = `<div data-auto-khs-loading="true">Memuat ${escapeHTML(semester.nama)}...</div>`;
+
+    triggerSemesterClick(semester);
+
+    const loadedContainer = await waitForRenderedKhs(container);
+    return loadedContainer.cloneNode(true);
+  }
+
+  function waitForResponseDetailContainer(maxAttempts = 20, interval = 250) {
+    return new Promise((resolve, reject) => {
+      let attempts = 0;
+      const intervalId = setInterval(() => {
+        const container = document.querySelector("#response-detail");
+        if (container) {
+          clearInterval(intervalId);
+          resolve(container);
+          return;
+        }
+
+        attempts++;
+        if (attempts >= maxAttempts) {
+          clearInterval(intervalId);
+          reject(
+            new Error("Elemen #response-detail tidak ditemukan di halaman."),
+          );
+        }
+      }, interval);
+    });
+  }
+
+  function triggerSemesterClick(semester) {
+    if (window.jQuery) {
+      window.jQuery(semester.element).trigger("click");
+      return;
+    }
+
+    semester.element.dispatchEvent(
+      new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      }),
+    );
+  }
+
+  function waitForRenderedKhs(container, maxAttempts = 50, interval = 300) {
+    return new Promise((resolve, reject) => {
+      let attempts = 0;
+      const intervalId = setInterval(() => {
+        const text = getCellText(container);
+        const hasLoadingMarker = Boolean(
+          container.querySelector("[data-auto-khs-loading]"),
+        );
+        const courseData = extractCourseData(container);
+
+        if (courseData.courses.length > 0) {
+          clearInterval(intervalId);
+          resolve(container);
+          return;
+        }
+
+        if (!hasLoadingMarker && looksLikeServerErrorText(text)) {
+          clearInterval(intervalId);
+          reject(
+            new Error(
+              `AIS menampilkan error saat memuat detail: ${trimPreview(text)}`,
+            ),
+          );
+          return;
+        }
+
+        attempts++;
+        if (attempts >= maxAttempts) {
+          clearInterval(intervalId);
+          reject(
+            new Error(
+              `Detail KHS tidak muncul setelah ${(maxAttempts * interval) / 1000} detik. Preview: ${trimPreview(text)}`,
+            ),
+          );
+        }
+      }, interval);
+    });
+  }
+
+  function loadDocumentInIframe(url) {
+    return new Promise((resolve, reject) => {
+      const iframe = document.createElement("iframe");
+      iframe.style.cssText =
+        "position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;border:0;opacity:0;";
+
+      const cleanup = () => {
+        clearTimeout(timeoutId);
+        iframe.remove();
+      };
+
+      const timeoutId = setTimeout(() => {
+        cleanup();
+        reject(new Error("Waktu tunggu iframe habis."));
+      }, 25000);
+
+      iframe.onload = () => {
+        setTimeout(() => {
+          try {
+            const iframeDocument =
+              iframe.contentDocument || iframe.contentWindow?.document;
+            if (!iframeDocument) {
+              throw new Error("Dokumen iframe tidak bisa dibaca.");
+            }
+
+            const clonedDocument = parseHTML(
+              iframeDocument.documentElement.outerHTML,
+            );
+            const preview = getDocumentPreview(clonedDocument);
+
+            cleanup();
+
+            if (looksLikeServerErrorText(preview)) {
+              reject(new Error(`Halaman cetak AIS berisi error: ${preview}`));
+              return;
+            }
+
+            resolve(clonedDocument);
+          } catch (error) {
+            cleanup();
+            reject(error);
+          }
+        }, 700);
+      };
+
+      iframe.onerror = () => {
+        cleanup();
+        reject(new Error("Iframe gagal memuat halaman cetak."));
+      };
+
+      document.body.appendChild(iframe);
+      iframe.src = url;
+    });
+  }
+
+  function parseResponseToDocument(responseText) {
+    const trimmed = responseText.trim();
+
+    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+      try {
+        const json = JSON.parse(trimmed);
+        const htmlCandidates = collectHtmlStrings(json);
+        if (htmlCandidates.length > 0) {
+          return parseHTML(htmlCandidates.map(decodeHtmlEntities).join("\n"));
+        }
+
+        const courses = extractCoursesFromJson(json);
+        if (courses.length > 0) {
+          return buildDocumentFromCourseObjects(
+            courses,
+            extractIpFromJson(json),
+          );
+        }
+
+        return parseHTML(
+          `<pre>${escapeHTML(JSON.stringify(json, null, 2))}</pre>`,
+        );
+      } catch (error) {
+        console.warn(
+          "⚠️ Response terlihat seperti JSON, tapi gagal diparse. Akan diparse sebagai HTML biasa.",
+          error,
+        );
+      }
+    }
+
+    return parseHTML(responseText);
   }
 
   function parseHTML(html) {
     return new DOMParser().parseFromString(html, "text/html");
+  }
+
+  function collectHtmlStrings(value, result = []) {
+    if (typeof value === "string") {
+      const text = value.trim();
+      const decoded = decodeHtmlEntities(text);
+      if (
+        /<\s*(table|tbody|tr|td|div|page)\b/i.test(text) ||
+        /<\s*(table|tbody|tr|td|div|page)\b/i.test(decoded) ||
+        text.includes("list-id-kelas") ||
+        decoded.includes("list-id-kelas")
+      ) {
+        result.push(decoded);
+      }
+      return result;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => collectHtmlStrings(item, result));
+      return result;
+    }
+
+    if (value && typeof value === "object") {
+      Object.values(value).forEach((item) => collectHtmlStrings(item, result));
+    }
+
+    return result;
+  }
+
+  function decodeHtmlEntities(value) {
+    if (!/[&][a-zA-Z#0-9]+;/.test(value)) return value;
+
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = value;
+    return textarea.value;
+  }
+
+  function extractCoursesFromJson(value) {
+    const arrays = [];
+
+    function visit(current) {
+      if (Array.isArray(current)) {
+        arrays.push(current);
+        current.forEach(visit);
+        return;
+      }
+
+      if (current && typeof current === "object") {
+        Object.values(current).forEach(visit);
+      }
+    }
+
+    visit(value);
+
+    for (const array of arrays) {
+      const coursesFromArrays = array
+        .filter((item) => Array.isArray(item) && item.length >= 8)
+        .map(mapJsonArrayToCourse)
+        .filter((course) => course && (course.kodeMk || course.namaMk));
+
+      if (coursesFromArrays.length > 0) return coursesFromArrays;
+
+      const courses = array
+        .filter(
+          (item) => item && typeof item === "object" && !Array.isArray(item),
+        )
+        .map(mapJsonObjectToCourse)
+        .filter(
+          (course) =>
+            course && (course.kodeMk || course.namaMk) && course.sks !== "",
+        );
+
+      if (courses.length > 0) return courses;
+    }
+
+    return [];
+  }
+
+  function mapJsonArrayToCourse(item) {
+    return {
+      kodeMk: stripHTML(item[1]) || "N/A",
+      namaMk: stripHTML(item[2]) || "-",
+      wp: stripHTML(item[3]) || "-",
+      sks: stripHTML(item[4]) || "0",
+      nilai: stripHTML(item[5]) || stripHTML(item[6]) || "-",
+      bobot: stripHTML(item[6]) || stripHTML(item[7]) || "-",
+      hasil: stripHTML(item[7]) || stripHTML(item[8]) || "0",
+    };
+  }
+
+  function mapJsonObjectToCourse(item) {
+    const kodeMk = getJsonValue(item, [
+      "kode_mk",
+      "kodemk",
+      "kode",
+      "kd_mk",
+      "kdmk",
+    ]);
+    const namaMk = getJsonValue(item, [
+      "nama_mk",
+      "namamk",
+      "mata_kuliah",
+      "matakuliah",
+      "nama_matakuliah",
+      "nama",
+    ]);
+    const sks = getJsonValue(item, ["sks", "jumlah_sks"]);
+
+    if (!kodeMk && !namaMk && !sks) return null;
+
+    return {
+      kodeMk: kodeMk || "N/A",
+      namaMk: namaMk || "-",
+      wp: getJsonValue(item, ["wp", "w_p", "wajib_pilihan", "jenis"]) || "-",
+      sks: sks || "0",
+      nilai: getJsonValue(item, ["nh", "nilai", "nilai_huruf", "huruf"]) || "-",
+      bobot: getJsonValue(item, ["bbt", "bobot", "nilai_bobot"]) || "-",
+      hasil:
+        getJsonValue(item, [
+          "hasil",
+          "sks_x_bbt",
+          "sksxbobot",
+          "sks_x_bobot",
+          "total",
+        ]) || "0",
+    };
+  }
+
+  function getJsonValue(item, keys) {
+    const entries = Object.entries(item);
+
+    for (const wantedKey of keys) {
+      const normalizedWantedKey = normalizeKey(wantedKey);
+      const found = entries.find(
+        ([key]) => normalizeKey(key) === normalizedWantedKey,
+      );
+      if (found && found[1] !== null && found[1] !== undefined)
+        return String(found[1]).trim();
+    }
+
+    for (const wantedKey of keys) {
+      const normalizedWantedKey = normalizeKey(wantedKey);
+      const found = entries.find(([key]) =>
+        normalizeKey(key).includes(normalizedWantedKey),
+      );
+      if (found && found[1] !== null && found[1] !== undefined)
+        return String(found[1]).trim();
+    }
+
+    return "";
+  }
+
+  function normalizeKey(key) {
+    return String(key)
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+  }
+
+  function buildDocumentFromCourseObjects(courses, ipText) {
+    const rows = courses
+      .map(
+        (course, index) => `<tr>
+          <td>${index + 1}</td>
+          <td>${escapeHTML(course.kodeMk || "N/A")}</td>
+          <td>${escapeHTML(course.namaMk || "-")}</td>
+          <td>${escapeHTML(course.wp || "-")}</td>
+          <td>${escapeHTML(course.sks || "0")}</td>
+          <td>${escapeHTML(course.nilai || "-")}</td>
+          <td>${escapeHTML(course.bobot || "-")}</td>
+          <td>${escapeHTML(course.hasil || "0")}</td>
+        </tr>`,
+      )
+      .join("\n");
+
+    return parseHTML(
+      `<div id="response-detail"><span id="ip">${escapeHTML(ipText || "0.00")}</span><table><tbody>${rows}</tbody></table></div>`,
+    );
+  }
+
+  function extractIpFromJson(value) {
+    let foundIp = "";
+
+    function visit(current, keyName = "") {
+      if (foundIp) return;
+
+      if (current && typeof current === "object") {
+        Object.entries(current).forEach(([key, child]) => visit(child, key));
+        return;
+      }
+
+      if (typeof current === "string" || typeof current === "number") {
+        const normalizedKey = normalizeKey(keyName);
+        if (["ip", "ips", "indeksprestasi"].includes(normalizedKey)) {
+          foundIp = String(current).trim();
+        }
+      }
+    }
+
+    visit(value);
+    return foundIp;
+  }
+
+  function getDocumentPreview(source) {
+    return trimPreview(getCellText(source));
+  }
+
+  function trimPreview(value, maxLength = 240) {
+    const text = String(value || "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!text) return "(kosong)";
+    return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+  }
+
+  function looksLikeServerErrorText(text) {
+    return /internal\s+server\s+error|server\s+error|whoops|exception|error\s+500|http\s+500/i.test(
+      String(text || ""),
+    );
+  }
+
+  function looksLikePrintableKhs(source) {
+    const text = getCellText(source);
+    return /kartu\s+hasil\s+studi|\bKHS\b|indeks\s+prestasi/i.test(text);
   }
 
   function generateKhsPageHTML(
@@ -499,7 +972,7 @@
   ) {
     const courseData = extractCourseData(detailContainer);
 
-    if (courseData.courses.length === 0 && source === "cetak") {
+    if (courseData.courses.length === 0 && source.startsWith("cetak")) {
       const embeddedPage = generateEmbeddedCetakPage(
         detailContainer,
         selectedSemester,
@@ -835,6 +1308,15 @@
 
   function getCellText(element) {
     return (element?.innerText || element?.textContent || "").trim();
+  }
+
+  function stripHTML(value) {
+    const html = String(value ?? "");
+    if (!/<[^>]+>/.test(html)) return html.trim();
+
+    const template = document.createElement("template");
+    template.innerHTML = html;
+    return getCellText(template.content).trim();
   }
 
   function toNumber(value) {
