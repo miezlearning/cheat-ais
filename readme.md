@@ -89,7 +89,7 @@ https://github.com/user-attachments/assets/88c9fb94-7368-408d-bea8-852e68a4e8d6
  * 
  * ================================
  * Penulis: Miez
- * Kontak: Discord  miezlipp     
+ * Kontak: Discord  miezlipp     & Instagram @miezlipp
  * ================================
  *
  * Hak Cipta © 2024 Miez. Semua hak dilindungi.
